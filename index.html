@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Countdown</title>
+<style>
+body{
+    margin:0;
+    height:100vh;
+    background:black;
+    overflow:hidden;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:white;
+    font-family:Arial;
+}
+canvas{
+    position:absolute;
+    inset:0;
+}
+#box{
+    z-index:2;
+    text-align:center;
+}
+#countdown{
+    font-size:2.5rem;
+    letter-spacing:3px;
+}
+button{
+    margin-top:20px;
+    padding:12px 25px;
+    font-size:1rem;
+    background:white;
+    color:black;
+    border:none;
+    cursor:pointer;
+    display:none;
+}
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+
+<div id="box">
+    <div id="countdown"></div>
+    <button id="startBtn" onclick="start()">Start the flight ✈️</button>
+</div>
+
+<script>
+// ⭐ stars
+const c=document.getElementById("stars");
+const ctx=c.getContext("2d");
+c.width=innerWidth;
+c.height=innerHeight;
+let stars=[];
+for(let i=0;i<200;i++){
+ stars.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*2,s:Math.random()*0.5});
+}
+function anim(){
+ ctx.clearRect(0,0,c.width,c.height);
+ ctx.fillStyle="white";
+ stars.forEach(st=>{
+  ctx.beginPath();
+  ctx.arc(st.x,st.y,st.r,0,Math.PI*2);
+  ctx.fill();
+  st.y+=st.s;
+  if(st.y>c.height){st.y=0;st.x=Math.random()*c.width;}
+ });
+ requestAnimationFrame(anim);
+}
+anim();
+
+// 🎂 countdown gate
+const target = new Date("2026-03-31T00:00:00").getTime();
+const cd=document.getElementById("countdown");
+const btn=document.getElementById("startBtn");
+
+function update(){
+ const now=Date.now();
+ const d=target-now;
+
+ if(d<=0){
+   cd.innerHTML="It’s time ✨";
+   btn.style.display="inline-block";
+   return;
+ }
+
+ const days=Math.floor(d/(1000*60*60*24));
+ const h=Math.floor((d%(1000*60*60*24))/(1000*60*60));
+ const m=Math.floor((d%(1000*60*60))/(1000*60));
+ const s=Math.floor((d%(1000*60))/1000);
+
+ cd.innerHTML=days+"d "+h+"h "+m+"m "+s+"s";
+}
+setInterval(update,1000);
+update();
+
+function start(){
+ window.location.href="second.html";
+}
+</script>
+
+</body>
+</html>
