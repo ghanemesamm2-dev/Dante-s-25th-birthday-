@@ -1,106 +1,160 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Countdown</title>
+<title>For You</title>
+
 <style>
 body{
     margin:0;
     height:100vh;
-    background:black;
     overflow:hidden;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    color:white;
-    font-family:Arial;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to top, #020111, #0b3d91);
 }
-canvas{
+
+/* ⭐ Stars */
+.star{
     position:absolute;
-    inset:0;
-}
-#box{
-    z-index:2;
-    text-align:center;
-}
-#countdown{
-    font-size:2.5rem;
-    letter-spacing:3px;
-}
-button{
-    margin-top:20px;
-    padding:12px 25px;
-    font-size:1rem;
+    width:3px;
+    height:3px;
     background:white;
-    color:black;
-    border:none;
-    cursor:pointer;
-    display:none;
+    border-radius:50%;
+    animation: twinkle 3s infinite ease-in-out;
 }
+@keyframes twinkle{
+    0%,100%{opacity:0.2;}
+    50%{opacity:1;}
+}
+
+/* 🌊 Moving Ocean */
+.ocean{
+    position:absolute;
+    bottom:0;
+    width:200%;
+    height:35%;
+    background: repeating-linear-gradient(
+        -45deg,
+        #001f3f,
+        #001f3f 20px,
+        #003366 20px,
+        #003366 40px
+    );
+    animation: wave 10s linear infinite;
+}
+@keyframes wave{
+    from{transform:translateX(0);}
+    to{transform:translateX(-50%);}
+}
+
+/* 🖼️ Photo */
+#photo{
+    position:absolute;
+    right:20px;
+    bottom:28%;
+    width:170px;
+    border-radius:20px;
+    box-shadow:0 0 25px rgba(255,255,255,0.4);
+}
+
+/* 💬 Messages */
+.message{
+    position:absolute;
+    color:white;
+    font-size:1.1rem;
+    max-width:80%;
+    text-align:center;
+    opacity:0;
+    animation: showHide 3s ease forwards;
+}
+@keyframes showHide{
+    0%{opacity:0;}
+    20%{opacity:1;}
+    80%{opacity:1;}
+    100%{opacity:0;}
+}
+
+/* ✨ Touch effects */
+.effect{
+    position:absolute;
+    pointer-events:none;
+    animation: pop 1.5s ease forwards;
+}
+@keyframes pop{
+    from{transform:translateY(0);opacity:1;}
+    to{transform:translateY(-40px);opacity:0;}
+}
+
+audio{display:none;}
 </style>
 </head>
+
 <body>
 
-<canvas id="stars"></canvas>
+<div class="ocean"></div>
+<img src="her.jpg" id="photo">
 
-<div id="box">
-    <div id="countdown"></div>
-    <button id="startBtn" onclick="start()">Start the flight ✈️</button>
-</div>
+<audio id="music" loop>
+    <source src="tonight.mp3" type="audio/mpeg">
+</audio>
 
 <script>
 // ⭐ stars
-const c=document.getElementById("stars");
-const ctx=c.getContext("2d");
-c.width=innerWidth;
-c.height=innerHeight;
-let stars=[];
-for(let i=0;i<200;i++){
- stars.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*2,s:Math.random()*0.5});
+for(let i=0;i<120;i++){
+    const s=document.createElement("div");
+    s.className="star";
+    s.style.left=Math.random()*100+"%";
+    s.style.top=Math.random()*60+"%";
+    s.style.animationDelay=Math.random()*3+"s";
+    document.body.appendChild(s);
 }
-function anim(){
- ctx.clearRect(0,0,c.width,c.height);
- ctx.fillStyle="white";
- stars.forEach(st=>{
-  ctx.beginPath();
-  ctx.arc(st.x,st.y,st.r,0,Math.PI*2);
-  ctx.fill();
-  st.y+=st.s;
-  if(st.y>c.height){st.y=0;st.x=Math.random()*c.width;}
- });
- requestAnimationFrame(anim);
+
+// 💬 Original messages (exact meaning)
+const messages=[
+"Happy birthday, love",
+"You are such a beautiful soul you deserve all the happiness in the world",
+"Every time you move you look like you dancing",
+"The way you move is poetry untamed",
+"Every step you take the stars are framed",
+"And if you knew how proud I am you’d never shade a tear have a fear"
+];
+
+let idx=0;
+function showMessage(){
+    if(idx>=messages.length) return;
+    const m=document.createElement("div");
+    m.className="message";
+    m.innerText=messages[idx];
+    m.style.left=Math.random()*60+20+"%";
+    m.style.top=Math.random()*50+10+"%";
+    document.body.appendChild(m);
+    setTimeout(()=>m.remove(),3000);
+    idx++;
+    setTimeout(showMessage,3500);
 }
-anim();
+setTimeout(showMessage,1500);
 
-// 🎂 countdown gate
-const target = new Date("2020-03-31T00:00:00").getTime();
-const cd=document.getElementById("countdown");
-const btn=document.getElementById("startBtn");
+// 🎵 force music + clean touch effects
+const music=document.getElementById("music");
+document.addEventListener("click",e=>{
+    if(music.paused){
+        music.play();
+    }
 
-function update(){
- const now=Date.now();
- const d=target-now;
+    const items=["✨","⭐","💫","💖"];
 
- if(d<=0){
-   cd.innerHTML="It’s time ✨";
-   btn.style.display="inline-block";
-   return;
- }
-
- const days=Math.floor(d/(1000*60*60*24));
- const h=Math.floor((d%(1000*60*60*24))/(1000*60*60));
- const m=Math.floor((d%(1000*60*60))/(1000*60));
- const s=Math.floor((d%(1000*60))/1000);
-
- cd.innerHTML=days+"d "+h+"h "+m+"m "+s+"s";
-}
-setInterval(update,1000);
-update();
-
-function start(){
- window.location.href="second.html";
-}
+    items.forEach((it,i)=>{
+        const el=document.createElement("div");
+        el.className="effect";
+        el.innerText=it;
+        el.style.left=e.pageX+(i*10-15)+"px";
+        el.style.top=e.pageY+"px";
+        el.style.color="white";
+        document.body.appendChild(el);
+        setTimeout(()=>el.remove(),1500);
+    });
+});
 </script>
 
 </body>
