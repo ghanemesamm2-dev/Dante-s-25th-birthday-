@@ -3,157 +3,178 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>For You</title>
+<title>Happy Birthday ❤️</title>
 
 <style>
-body{
+html,body{
     margin:0;
-    height:100vh;
+    padding:0;
+    width:100%;
+    height:100%;
     overflow:hidden;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(to top, #020111, #0b3d91);
+    font-family: 'Georgia', serif;
 }
 
-/* ⭐ Stars */
+body{
+    background: url("bg.gif") center/cover no-repeat fixed;
+    position: relative;
+}
+
+/* overlay */
+body::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,0.35);
+    z-index:0;
+}
+
+/* النجوم */
 .star{
     position:absolute;
-    width:3px;
-    height:3px;
-    background:white;
-    border-radius:50%;
+    color:white;
+    font-size:10px;
+    opacity:0.8;
     animation: twinkle 3s infinite ease-in-out;
 }
+
 @keyframes twinkle{
-    0%,100%{opacity:0.2;}
+    0%,100%{opacity:.3;}
     50%{opacity:1;}
 }
 
-/* 🌊 Moving Ocean */
-.ocean{
+/* النص الثابت */
+#mainText{
     position:absolute;
-    bottom:0;
-    width:200%;
-    height:35%;
-    background: repeating-linear-gradient(
-        -45deg,
-        #001f3f,
-        #001f3f 20px,
-        #003366 20px,
-        #003366 40px
-    );
-    animation: wave 10s linear infinite;
-}
-@keyframes wave{
-    from{transform:translateX(0);}
-    to{transform:translateX(-50%);}
-}
-
-/* 🖼️ Photo */
-#photo{
-    position:absolute;
-    right:20px;
-    bottom:28%;
-    width:170px;
-    border-radius:20px;
-    box-shadow:0 0 25px rgba(255,255,255,0.4);
-}
-
-/* 💬 Messages */
-.message{
-    position:absolute;
-    color:white;
-    font-size:1.1rem;
-    max-width:80%;
+    z-index:2;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:85%;
     text-align:center;
-    opacity:0;
-    animation: showHide 3s ease forwards;
-}
-@keyframes showHide{
-    0%{opacity:0;}
-    20%{opacity:1;}
-    80%{opacity:1;}
-    100%{opacity:0;}
+    color:white;
+    font-size:18px;
+    line-height:1.6;
+    text-shadow:0 0 15px rgba(255,255,255,.3);
 }
 
-/* ✨ Touch effects */
-.effect{
+/* جمل تظهر وتختفي */
+.floatingText{
     position:absolute;
-    pointer-events:none;
-    animation: pop 1.5s ease forwards;
-}
-@keyframes pop{
-    from{transform:translateY(0);opacity:1;}
-    to{transform:translateY(-40px);opacity:0;}
+    z-index:2;
+    color:white;
+    font-size:14px;
+    opacity:0;
+    animation: showHide 6s ease forwards;
+    text-shadow:0 0 10px rgba(255,255,255,.4);
 }
 
-audio{display:none;}
+@keyframes showHide{
+    0%{opacity:0;transform:scale(.95);}
+    15%{opacity:1;}
+    70%{opacity:1;}
+    100%{opacity:0;transform:scale(1);}
+}
+
+/* الايموجيز */
+.emoji{
+    position:absolute;
+    z-index:3;
+    font-size:22px;
+    animation: fall 4s ease forwards;
+}
+
+@keyframes fall{
+    from{transform:translateY(0);opacity:1;}
+    to{transform:translateY(220px);opacity:0;}
+}
+
+/* تلميح تشغيل الصوت */
+#tapNote{
+    position:absolute;
+    bottom:20px;
+    width:100%;
+    text-align:center;
+    color:white;
+    font-size:12px;
+    opacity:.7;
+    z-index:2;
+}
 </style>
 </head>
 
 <body>
 
-<div class="ocean"></div>
-<img src="her.jpg" id="photo">
+<div id="mainText">
+Happy Birthday love,<br>
+you always knew how to make me smile.<br>
+I appreciate you and I need you to know<br>
+that you have such a beautiful soul.<br>
+You are one of your kind.<br>
+I love you so much ❤️
+</div>
 
-<audio id="music" loop>
-    <source src="tonight.mp3" type="audio/mpeg">
-</audio>
+<div id="tapNote">tap anywhere ✨</div>
+
+<audio id="music" src="song.mp3" loop></audio>
 
 <script>
-// ⭐ stars
-for(let i=0;i<120;i++){
-    const s=document.createElement("div");
+/* تشغيل الموسيقى (iOS يحتاج لمسة) */
+document.body.addEventListener("touchstart",()=>{
+    const m=document.getElementById("music");
+    if(m.paused){
+        m.play();
+    }
+},{once:true});
+
+/* نجوم ثابتة */
+for(let i=0;i<40;i++){
+    let s=document.createElement("div");
     s.className="star";
+    s.innerHTML="✦";
     s.style.left=Math.random()*100+"%";
-    s.style.top=Math.random()*60+"%";
-    s.style.animationDelay=Math.random()*3+"s";
+    s.style.top=Math.random()*100+"%";
+    s.style.fontSize=(6+Math.random()*8)+"px";
+    s.style.animationDuration=(2+Math.random()*4)+"s";
     document.body.appendChild(s);
 }
 
-// 💬 Original messages (exact meaning)
-const messages=[
-"Happy birthday, love",
-"You are such a beautiful soul you deserve all the happiness in the world",
-"Every time you move you look like you dancing",
+/* جمل عشوائية */
+const texts=[
+"Happy birthday love",
+"You are such a beautiful soul",
+"You deserve all the happiness in the world",
+"Every time you move you look like you're dancing",
 "The way you move is poetry untamed",
 "Every step you take the stars are framed",
-"And if you knew how proud I am you’d never shade a tear have a fear"
+"And if you knew how proud I am you'd never shade a tear"
 ];
 
-let idx=0;
-function showMessage(){
-    if(idx>=messages.length) return;
-    const m=document.createElement("div");
-    m.className="message";
-    m.innerText=messages[idx];
-    m.style.left=Math.random()*60+20+"%";
-    m.style.top=Math.random()*50+10+"%";
-    document.body.appendChild(m);
-    setTimeout(()=>m.remove(),3000);
-    idx++;
-    setTimeout(showMessage,3500);
+function spawnText(){
+    const t=document.createElement("div");
+    t.className="floatingText";
+    t.innerText=texts[Math.floor(Math.random()*texts.length)];
+    t.style.left=Math.random()*70+"%";
+    t.style.top=Math.random()*70+"%";
+    document.body.appendChild(t);
+    setTimeout(()=>t.remove(),6000);
 }
-setTimeout(showMessage,1500);
 
-// 🎵 force music + clean touch effects
-const music=document.getElementById("music");
-document.addEventListener("click",e=>{
-    if(music.paused){
-        music.play();
+setInterval(spawnText,2500);
+
+/* ايموجيز عند اللمس */
+const emojis=["✨","💖","⭐","🌙","💫","🫶","🌸","💕","🪽"];
+
+document.addEventListener("touchstart",(e)=>{
+    for(let i=0;i<4;i++){
+        let em=document.createElement("div");
+        em.className="emoji";
+        em.innerText=emojis[Math.floor(Math.random()*emojis.length)];
+        em.style.left=(e.touches[0].clientX-10+Math.random()*40)+"px";
+        em.style.top=(e.touches[0].clientY-10)+"px";
+        document.body.appendChild(em);
+        setTimeout(()=>em.remove(),4000);
     }
-
-    const items=["✨","⭐","💫","💖"];
-
-    items.forEach((it,i)=>{
-        const el=document.createElement("div");
-        el.className="effect";
-        el.innerText=it;
-        el.style.left=e.pageX+(i*10-15)+"px";
-        el.style.top=e.pageY+"px";
-        el.style.color="white";
-        document.body.appendChild(el);
-        setTimeout(()=>el.remove(),1500);
-    });
 });
 </script>
 
